@@ -1,0 +1,10 @@
+{
+    "name": "SmartInbox",
+    "description": "AI based email reader ",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "action": {
+      "default_popup": "index.html",
+      "default_icon": "images/90thjqva.png"
+    }
+  }
