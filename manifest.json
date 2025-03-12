@@ -6,5 +6,8 @@
     "action": {
       "default_popup": "index.html",
       "default_icon": "images/90thjqva.png"
-    }
+    },
+    "permissions": [
+        "https://<34.122.217.188>:5000/*"
+    ]
   }
