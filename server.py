@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 
+import main
+
 app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
@@ -12,7 +14,8 @@ def chat():
     user_message = data.get("message", "")
     
     # Placeholder response (replace with ChatGPT API later)
-    response = f"Received: {user_message}"
+    response = main.chatAPICall(user_message); 
+    print(response)
     
     return jsonify({"response": response})
 
