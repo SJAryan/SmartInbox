@@ -1,6 +1,7 @@
 
 
-var message = ""
+
+var message = 
 
 fetch("http://34.122.217.188:5000/chat", {
     method: "POST",
