@@ -26,7 +26,14 @@ def main():
       flow = InstalledAppFlow.from_client_secrets_file(
           "credentials.json", SCOPES
       )
-      creds = flow.run_console()
+      auth_url, _ = flow.authorization_url(prompt='consent')
+
+print(f"Please visit this URL to authorize the application:\n{auth_url}")
+
+auth_code = input("Enter the authorization code: ")
+
+flow.fetch_token(code=auth_code)
+creds = flow.credentials
     # Save the credentials for the next run
     with open("token.json", "w") as token:
       token.write(creds.to_json())
