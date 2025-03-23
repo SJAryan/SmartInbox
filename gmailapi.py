@@ -11,9 +11,7 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 
 def main():
-  """Shows basic usage of the Gmail API.
-  Lists the user's Gmail labels.
-  """
+  
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
   # created automatically when the authorization flow completes for the first
