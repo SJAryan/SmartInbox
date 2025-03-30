@@ -29,11 +29,13 @@ def main():
             # creds = flow.run_local_server(port=0)
 
             # Option B: Manual approach (no browser needed):
-            auth_url, _ = flow.authorization_url(prompt='consent')
-            print(f"Please visit this URL to authorize the application:\n{auth_url}")
-            auth_code = input("Enter the authorization code: ")
-            flow.fetch_token(code=auth_code)
-            creds = flow.credentials
+            # auth_url, _ = flow.authorization_url(prompt='consent')
+            # print(f"Please visit this URL to authorize the application:\n{auth_url}")
+            # auth_code = input("Enter the authorization code: ")
+            # flow.fetch_token(code=auth_code)
+            # creds = flow.credentials 
+            creds = flow.run_console()
+
 
         # Save the credentials for the next run
         with open("token.json", "w") as token_file:
