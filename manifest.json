@@ -7,7 +7,9 @@
 
   "permissions": [
     "identity",
-     "https://34.122.217.188:5000/*"
+     "https://34.122.217.188:5000/*",
+    "identity.email",
+    "https://www.googleapis.com/"
   ],
 
   "oauth2": {
