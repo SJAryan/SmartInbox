@@ -1,13 +1,26 @@
+
 {
-    "name": "SmartInbox",
-    "description": "AI based email reader ",
-    "version": "1.0.0",
-    "manifest_version": 3,
-    "action": {
-      "default_popup": "index.html",
-      "default_icon": "images/90thjqva.png"
-    },
-    "permissions": [
-        "https://34.122.217.188:5000/*"
+  "manifest_version": 3,
+  "name": "SmartInbox Gmail Extension",
+  "version": "1.0",
+  "description": "Reads Gmail messages.",
+
+  "permissions": [
+    "identity",
+     "https://34.122.217.188:5000/*"
+  ],
+
+  "oauth2": {
+    "client_id": "307535856746-86mq4au5ein6tkd8mhc95ndjmp58joee.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/userinfo.email"
     ]
+  },
+
+  
+  "background": {
+    "service_worker": "background.js" 
   }
+  
+}
