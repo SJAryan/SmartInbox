@@ -7,9 +7,7 @@
 
   "permissions": [
     "identity",
-     "https://34.122.217.188:5000/*",
-    "identity.email",
-    "https://www.googleapis.com/"
+    "identity.email"
   ],
 
   "oauth2": {
@@ -19,10 +17,11 @@
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   },
+  "background": {
+    "service_worker": "background.js"
+  }
 
   
-  "background": {
-    "service_worker": "background.js" 
-  }
+
   
 }
