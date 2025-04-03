@@ -52,7 +52,7 @@ function getAuthTokenAndFetchEmails() {
   }
   
   // Trigger the process (e.g., when the extension starts, or user clicks a button) 
-  window.onload = getAuthTokenAndFetchEmails();
+ getAuthTokenAndFetchEmails();
 
   
 
