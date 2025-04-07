@@ -14,30 +14,18 @@ def main():
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
 
-    # If credentials are invalid or don't exist, create new ones
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            # 1) Make sure credentials.json is for an 'installed' application
-            # 2) If you are on a remote VM, run_local_server() might fail. 
-            #    Try run_console() or a manual approach if you get browser errors.
+            
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
 
-            # Option A: run_local_server (requires a browser)
-            # Uncomment if you have a browser or X11 forwarding set up:
-            # creds = flow.run_local_server(port=0)
-
-            # Option B: Manual approach (no browser needed):
-            # auth_url, _ = flow.authorization_url(prompt='consent')
-            # print(f"Please visit this URL to authorize the application:\n{auth_url}")
-            # auth_code = input("Enter the authorization code: ")
-            # flow.fetch_token(code=auth_code)
-            # creds = flow.credentials 
+ 
             creds = flow.run_console()
 
 
-        # Save the credentials for the next run
         with open("token.json", "w") as token_file:
             token_file.write(creds.to_json())
 

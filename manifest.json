@@ -17,8 +17,8 @@
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   },
-  "background": {
-    "service_worker": "background.js"
+  "action": {
+    "default_popup": "index.html" 
   }
 
   
