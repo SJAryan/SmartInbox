@@ -21,7 +21,7 @@ function getAuthTokenAndFetchEmails() {
     });
   } 
 
-  var messagesToSendToAIAPI  = "First Message: " +"\n"; // Initialize an empty string to store messages
+  var messagesToSendToAIAPI  = "First Message: " +"\n\n"; // Initialize an empty string to store messages
 
   
   async function fetchGmailMessages(authToken) {
@@ -103,7 +103,19 @@ function getAuthTokenAndFetchEmails() {
                        console.error(`  - ID: ${messageId}, Error decoding body: `, e);
                        console.log("    Raw body data that failed:", bodyData.substring(0,100)); // Log raw data on error
                   } 
-                  messagesToSendToAIAPI += "Subject"+ messageId.headers + "Body of message" + decodedBody + "\n\n" + "Next Message" + "\n"; // Append to the string
+                   // --- Find the Subject ---
+    let subject = 'No Subject'; // Default if not found
+    if (messageDetail.payload && messageDetail.payload.headers) {
+        // Use .find() to search the headers array
+        const subjectHeader = messageDetail.payload.headers.find(
+            header => header.name.toLowerCase() === 'subject'
+        );
+        if (subjectHeader) {
+            subject = subjectHeader.value; // Get the value if found
+        }
+    }
+                  
+                  messagesToSendToAIAPI += "Subject"+ subject + "Body of message" + decodedBody + "\n\n" + "Next Message" + "\n\n"; // Append to the string
           
               } else {
                   console.log(`  - ID: ${messageId}, Could not find text/plain or text/html body data.`);
