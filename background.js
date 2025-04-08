@@ -10,7 +10,7 @@ function getAuthTokenAndFetchEmails() {
   
       if (token) {
         // You have the OAuth token!
-        console.log("Obtained OAuth Token:", token); // Don't log tokens in production
+      //  console.log("Obtained OAuth Token:", token); // Don't log tokens in production
   
         // Now use this token to call the Gmail API
         fetchGmailMessages(token);
@@ -39,7 +39,7 @@ function getAuthTokenAndFetchEmails() {
         }
         const listData = await listResponse.json();
         const messages = listData.messages || [];
-        console.log("Gmail Message IDs:", messages); // Log the IDs you received
+        //console.log("Gmail Message IDs:", messages); // Log the IDs you received
 
         if (messages.length === 0) {
             console.log("No messages found.");
@@ -47,7 +47,7 @@ function getAuthTokenAndFetchEmails() {
         }
 
         // --- Second API Call (Loop): Get Content for Each Message ID ---
-        console.log("Fetching message content...");
+       // console.log("Fetching message content...");
         const detailedMessages = [];
         for (const messageMeta of messages) {
             const messageId = messageMeta.id;
@@ -92,6 +92,7 @@ function getAuthTokenAndFetchEmails() {
                            // decodedBody = decodedBody.replace(/<[^>]*>?/gm, ''); // Very basic stripping
                       } else {
                            console.log(`  - ID: ${messageId}, Found Plain Text body (content length: ${decodedBody.length})`);
+                           console.log(decodedBody); // Log the decoded body for plain text
                       }
           
                        // *** THIS is the full(er) content to send to your backend ***
