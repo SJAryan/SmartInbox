@@ -21,7 +21,7 @@ header {
 
 main {
     padding: 1.5rem;
-    max-width: 600px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -34,16 +34,15 @@ h2 {
     border-bottom: 1px solid #0078d7;
     padding-bottom: 0.5rem;
 }
-#summaries,
-#todo-list {
+#summaries{
     background-color: #ffffff;
-    padding: 1rem;
+    /* padding: 1rem; */
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-.placeholder {
-    color: #666;
+#placeholder {
+    color: black;
     font-style: italic;
-}
+} 
 
