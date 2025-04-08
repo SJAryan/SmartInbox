@@ -140,7 +140,7 @@ function getAuthTokenAndFetchEmails() {
     }
     console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent 
     var data  = sendToAIAPI(messagesToSendToAIAPI); //  Call the function to send messages to AI API
-    var summary = data.response.message; // Get the summary from the response
+    var summary =  data.get("response", "")
     document.getElementById("placeholder").innerHTML = summary; // Display the summary in the HTML element with ID "summary"
 
     
