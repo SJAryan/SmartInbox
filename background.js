@@ -19,7 +19,10 @@ function getAuthTokenAndFetchEmails() {
          console.error("Could not retrieve token.");
       }
     });
-  }
+  } 
+
+  var messagesToSendToAIAPI  = ""; // Initialize an empty string to store messages
+
   
   async function fetchGmailMessages(authToken) {
     const listUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5'; // Get fewer messages initially for testing
@@ -64,7 +67,8 @@ function getAuthTokenAndFetchEmails() {
                    const subjectHeader = messageDetail.payload.headers.find(h => h.name.toLowerCase() === 'subject');
                    if (subjectHeader) subject = subjectHeader.value;
                 }
-                console.log(`  - ID: ${messageId}, Snippet: ${messageDetail.snippet}, Subject: ${subject}`);
+                console.log(`Snippet: ${messageDetail.snippet}, Subject: ${subject}`);
+                messagesToSendToAIAPI += `\n\nMessage ID: ${messageId}\nSubject: ${subject}\nSnippet: ${messageDetail.snippet}`; // Append to the string
 
             } else {
                 console.error(`Gmail API Get Error for ID ${messageId}: ${getResponse.status}`, await getResponse.json());
@@ -79,6 +83,7 @@ function getAuthTokenAndFetchEmails() {
     } catch (error) {
         console.error("Network error fetching Gmail messages:", error);
     }
+    console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent
 }
   
   // Trigger the process (e.g., when the extension starts, or user clicks a button) 
