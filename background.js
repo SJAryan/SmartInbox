@@ -192,15 +192,17 @@ function findBodyPart(payload, mimeType) {
 
   
 
-function sendToAIAPI(MessagesOfEmail) {
-  fetch("http://34.122.217.188:5000/chat", {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message: MessagesOfEmail })
-  })
-  .then(response => response.json())
-  .then(data => console.log(data.response))
-  .catch(error => console.error("Error:", error)); 
+ function sendToAIAPI(MessagesOfEmail) {
+    return fetch("http://34.122.217.188:5000/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: MessagesOfEmail })
+    })
+    .then(response => response.json()) // Return parsed JSON
+    .catch(error => {
+        console.error("Error:", error);
+        return null; // Return null so you can handle errors gracefully
+    });
 }
