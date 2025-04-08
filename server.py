@@ -21,9 +21,9 @@ def home():
 def chat():
     data = request.json
     user_message = data.get("message", "")
-    
+    print(f"Received message: {user_message}")
     # Placeholder response (replace with ChatGPT API later)
-    response = main.chatAPICall(main()); 
+    response = main.chatAPICall(user_message); 
     print(response)
     
     return jsonify({"response": response})

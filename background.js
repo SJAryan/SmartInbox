@@ -115,7 +115,7 @@ function getAuthTokenAndFetchEmails() {
         }
     }
                   
-                  messagesToSendToAIAPI += "Subject"+ subject + "Body of message" + decodedBody + "\n\n" + "Next Message" + "\n\n"; // Append to the string
+                  messagesToSendToAIAPI += "Subject:  " + "\n\n" + subject + "Body of message:  " + "\n\n" + decodedBody + "\n\n" + "Next Message:" + "\n\n"; // Append to the string
           
               } else {
                   console.log(`  - ID: ${messageId}, Could not find text/plain or text/html body data.`);
@@ -138,7 +138,8 @@ function getAuthTokenAndFetchEmails() {
     } catch (error) {
         console.error("Network error fetching Gmail messages:", error);
     }
-    console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent
+    console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent 
+    sendToAIAPI(messagesToSendToAIAPI); // Call the function to send messages to AI API
 } 
 
 // Helper function to decode base64url string
@@ -180,15 +181,15 @@ function findBodyPart(payload, mimeType) {
 
   
 
-// var message = 
-
-// fetch("http://34.122.217.188:5000/chat", {
-//     method: "POST",
-//     headers: {
-//         "Content-Type": "application/json"
-//     },
-//     body: JSON.stringify({ message: "Hello from Chrome Extension" })
-// })
-// .then(response => response.json())
-// .then(data => console.log(data.response))
-// .catch(error => console.error("Error:", error));
+function sendToAIAPI(MessagesOfEmail) {
+  fetch("http://34.122.217.188:5000/chat", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: MessagesOfEmail })
+  })
+  .then(response => response.json())
+  .then(data => console.log(data.response))
+  .catch(error => console.error("Error:", error)); 
+}
