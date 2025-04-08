@@ -42,13 +42,10 @@ def chat():
          return jsonify({"error": "Empty message content received"}), 400
 
     try:
-        # Placeholder response (replace with ChatGPT API later)
-        # Ensure main.chatAPICall exists and handles potential errors
         response = main.chatAPICall(user_message)  
-        print("here")
-        print("Generated response length:", len(response)) # Log length
+        print(response)
         
-        # Ensure the response from chatAPICall is serializable (e.g., a string)
+        
         return jsonify({"response": response})
     except Exception as e:
         print(f"Error during chatAPICall or processing: {e}")
