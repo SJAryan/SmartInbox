@@ -44,7 +44,8 @@ def chat():
     try:
         # Placeholder response (replace with ChatGPT API later)
         # Ensure main.chatAPICall exists and handles potential errors
-        response = main.chatAPICall(user_message) 
+        response = main.chatAPICall(user_message)  
+        print("here")
         print("Generated response length:", len(response)) # Log length
         
         # Ensure the response from chatAPICall is serializable (e.g., a string)
