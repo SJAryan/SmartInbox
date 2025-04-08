@@ -22,34 +22,64 @@ function getAuthTokenAndFetchEmails() {
   }
   
   async function fetchGmailMessages(authToken) {
-    const url = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10'; // Example API endpoint
-  
+    const listUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5'; // Get fewer messages initially for testing
+
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${authToken}`, // Use the token here
-          'Content-Type': 'application/json'
+        // --- First API Call: Get Message IDs ---
+        const listResponse = await fetch(listUrl, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!listResponse.ok) {
+            console.error(`Gmail API List Error: ${listResponse.status}`, await listResponse.json());
+            // Handle token expiration/removal if needed
+            return;
         }
-      });
-  
-      if (!response.ok) {
-         // Handle API errors (e.g., 401 Unauthorized, 403 Forbidden)
-         const errorData = await response.json();
-         console.error(`Gmail API Error: ${response.status}`, errorData);
-         // If error is 401 or 403, might need to remove cached token and retry
-         // chrome.identity.removeCachedAuthToken({ token: authToken }, () => {});
-         return;
-      }
-  
-      const data = await response.json();
-      console.log("Gmail Messages:", data.messages || "No messages found.");
-      // Process the messages...
-  
+        const listData = await listResponse.json();
+        const messages = listData.messages || [];
+        console.log("Gmail Message IDs:", messages); // Log the IDs you received
+
+        if (messages.length === 0) {
+            console.log("No messages found.");
+            return;
+        }
+
+        // --- Second API Call (Loop): Get Content for Each Message ID ---
+        console.log("Fetching message content...");
+        const detailedMessages = [];
+        for (const messageMeta of messages) {
+            const messageId = messageMeta.id;
+            // Request 'metadata' for headers or 'full' for body too
+            const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=metadata`; // Or format=full
+
+            const getResponse = await fetch(getUrl, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (getResponse.ok) {
+                const messageDetail = await getResponse.json();
+                detailedMessages.push(messageDetail); // Store the detailed message
+                 // Log specific parts: Find subject in headers
+                let subject = 'No Subject';
+                if (messageDetail.payload && messageDetail.payload.headers) {
+                   const subjectHeader = messageDetail.payload.headers.find(h => h.name.toLowerCase() === 'subject');
+                   if (subjectHeader) subject = subjectHeader.value;
+                }
+                console.log(`  - ID: ${messageId}, Snippet: ${messageDetail.snippet}, Subject: ${subject}`);
+
+            } else {
+                console.error(`Gmail API Get Error for ID ${messageId}: ${getResponse.status}`, await getResponse.json());
+            }
+            // Add a small delay if needed to avoid hitting rate limits too quickly
+            // await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        console.log("Finished fetching detailed messages:", detailedMessages);
+        // Now you have detailedMessages array containing actual content to process/summarize
+
+
     } catch (error) {
-      console.error("Network error fetching Gmail messages:", error);
+        console.error("Network error fetching Gmail messages:", error);
     }
-  }
+}
   
   // Trigger the process (e.g., when the extension starts, or user clicks a button) 
  getAuthTokenAndFetchEmails();
