@@ -34,13 +34,10 @@ function getAuthTokenAndFetchEmails() {
         });
         if (!listResponse.ok) {
             console.error(`Gmail API List Error: ${listResponse.status}`, await listResponse.json());
-            // Handle token expiration/removal if needed
             return;
         }
         const listData = await listResponse.json();
         const messages = listData.messages || [];
-        //console.log("Gmail Message IDs:", messages); // Log the IDs you received
-
         if (messages.length === 0) {
             console.log("No messages found.");
             return;
@@ -51,7 +48,8 @@ function getAuthTokenAndFetchEmails() {
         const detailedMessages = [];
         for (const messageMeta of messages) {
             const messageId = messageMeta.id;
-            const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=full`;            const getResponse = await fetch(getUrl, {
+            const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=full`;         
+               const getResponse = await fetch(getUrl, {
                 headers: { 'Authorization': `Bearer ${authToken}` }
             });
 
@@ -67,7 +65,7 @@ function getAuthTokenAndFetchEmails() {
                  bodyData = findBodyPart(messageDetail.payload, mimeType);
               }
           
-              // 2. If no 'text/plain', try to find 'text/html'
+              // 2. If no 'text/plain', try to fin d 'text/html'
               if (!bodyData && messageDetail.payload) {
                  mimeType = 'text/html';
                  bodyData = findBodyPart(messageDetail.payload, mimeType);
@@ -139,9 +137,16 @@ function getAuthTokenAndFetchEmails() {
         console.error("Network error fetching Gmail messages:", error);
     }
     console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent 
-    var data  = sendToAIAPI(messagesToSendToAIAPI); //  Call the function to send messages to AI API
-    var summary =  data.get("response", "")
-    document.getElementById("placeholder").innerHTML = summary; // Display the summary in the HTML element with ID "summary"
+    var data  = await sendToAIAPI(messagesToSendToAIAPI); //  Call the function to send messages to AI API
+    if (data && data.response) {
+        const summary = data.response; // Access using dot notation
+        console.log("Received summary from backend:", summary);
+        // *** Update UI here ***
+        document.getElementById("placeholder").innerHTML = summary; 
+    } else {
+         console.error("Did not receive a valid response structure from backend.");
+         document.getElementById("placeholder").innerHTML = "Error receiving summary.";
+    }
 
     
 } 
