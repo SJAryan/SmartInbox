@@ -51,28 +51,69 @@ function getAuthTokenAndFetchEmails() {
         const detailedMessages = [];
         for (const messageMeta of messages) {
             const messageId = messageMeta.id;
-            // Request 'metadata' for headers or 'full' for body too
-            const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=metadata`; // Or format=full
-
-            const getResponse = await fetch(getUrl, {
+            const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=full`;            const getResponse = await fetch(getUrl, {
                 headers: { 'Authorization': `Bearer ${authToken}` }
             });
 
             if (getResponse.ok) {
-                const messageDetail = await getResponse.json();
-                detailedMessages.push(messageDetail); // Store the detailed message
-                 // Log specific parts: Find subject in headers
-                let subject = 'No Subject';
-                if (messageDetail.payload && messageDetail.payload.headers) {
-                   const subjectHeader = messageDetail.payload.headers.find(h => h.name.toLowerCase() === 'subject');
-                   if (subjectHeader) subject = subjectHeader.value;
-                }
-                console.log(`Snippet: ${messageDetail.snippet}, Subject: ${subject}`);
-                messagesToSendToAIAPI += `\n\nMessage ID: ${messageId}\nSubject: ${subject}\nSnippet: ${messageDetail.snippet}`; // Append to the string
+              const messageDetail = await getResponse.json();
 
-            } else {
-                console.error(`Gmail API Get Error for ID ${messageId}: ${getResponse.status}`, await getResponse.json());
-            }
+              let bodyData = null;
+              let mimeType = '';
+          
+              // 1. Try to find 'text/plain' part first
+              if (messageDetail.payload) {
+                 mimeType = 'text/plain';
+                 bodyData = findBodyPart(messageDetail.payload, mimeType);
+              }
+          
+              // 2. If no 'text/plain', try to find 'text/html'
+              if (!bodyData && messageDetail.payload) {
+                 mimeType = 'text/html';
+                 bodyData = findBodyPart(messageDetail.payload, mimeType);
+              }
+          
+              // 3. Fallback for very simple messages (less common)
+               if (!bodyData && messageDetail.payload && messageDetail.payload.body && messageDetail.payload.body.data) {
+                  bodyData = messageDetail.payload.body.data;
+                  mimeType = messageDetail.payload.mimeType;
+               }
+          
+          
+              let decodedBody = '';
+              if (bodyData) {
+                  try {
+                      decodedBody = base64UrlDecode(bodyData);
+          
+                      // If it was HTML, you might want to strip tags here or send HTML to backend
+                      if (mimeType === 'text/html') {
+                           console.log(`  - ID: ${messageId}, Found HTML body (content length: ${decodedBody.length}). Needs stripping for pure text summary.`);
+                           // You could implement basic tag stripping here if needed immediately
+                           // decodedBody = decodedBody.replace(/<[^>]*>?/gm, ''); // Very basic stripping
+                      } else {
+                           console.log(`  - ID: ${messageId}, Found Plain Text body (content length: ${decodedBody.length})`);
+                      }
+          
+                       // *** THIS is the full(er) content to send to your backend ***
+                       console.log("    Decoded Body Snippet:", decodedBody.substring(0, 200)); // Log first 200 chars
+                       // TODO: Send decodedBody to your Python backend for summarization
+          
+                  } catch (e) {
+                       console.error(`  - ID: ${messageId}, Error decoding body: `, e);
+                       console.log("    Raw body data that failed:", bodyData.substring(0,100)); // Log raw data on error
+                  }
+          
+              } else {
+                  console.log(`  - ID: ${messageId}, Could not find text/plain or text/html body data.`);
+                  // Sometimes the main content might be in an attachment or structured differently
+              }
+          
+              // Store or process the detailed message / decoded body as needed
+              // detailedMessages.push({ id: messageId, snippet: messageDetail.snippet, body: decodedBody });
+          
+          } else {
+              console.error(`Gmail API Get Error for ID ${messageId}: ${getResponse.status}`, await getResponse.json());
+          }
             // Add a small delay if needed to avoid hitting rate limits too quickly
             // await new Promise(resolve => setTimeout(resolve, 100));
         }
@@ -84,7 +125,41 @@ function getAuthTokenAndFetchEmails() {
         console.error("Network error fetching Gmail messages:", error);
     }
     console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent
+} 
+
+// Helper function to decode base64url string
+function base64UrlDecode(input) {
+  // Replace non-url compatible chars with base64 standard chars
+  input = input.replace(/-/g, '+').replace(/_/g, '/');
+  // Pad out with standard base64 required padding characters
+  var pad = input.length % 4;
+  if (pad) {
+      if (pad === 1) {
+          throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+      }
+      input += new Array(5 - pad).join('=');
+  }
+  return atob(input); // Standard base64 decode
 }
+
+// Helper function to find the desired body part (prefer text/plain)
+function findBodyPart(payload, mimeType) {
+  let result = null;
+  if (payload.mimeType === mimeType && payload.body && payload.body.data) {
+      return payload.body.data;
+  }
+
+  if (payload.parts) {
+      for (const part of payload.parts) {
+          result = findBodyPart(part, mimeType); // Recursive call
+          if (result) {
+              return result; // Found it in a sub-part
+          }
+      }
+  }
+  return null; // Not found
+}
+
   
   // Trigger the process (e.g., when the extension starts, or user clicks a button) 
  getAuthTokenAndFetchEmails();
