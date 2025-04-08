@@ -1,4 +1,6 @@
-from openai import OpenAI
+from openai import OpenAI 
+
+import json
 
 
 
@@ -21,5 +23,8 @@ def chatAPICall(user_message):
             {"role": "user", "content": user_message}
         ]
     )
-    print(completion.choices[0].message)
-    return completion.choices[0].message
+    print(completion.choices[0].message) 
+    answer = completion.choices[0].message.content
+    print("the completion answer == "  + answer)
+    answer = json.dumps(answer)
+    return answer
