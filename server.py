@@ -7,29 +7,80 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError 
-
-import main
+from googleapiclient.errors import HttpError  
+from flask import Flask, request, jsonify
+from flask_cors import CORS # Import CORS
+import main # Assuming main.py contains chatAPICall
 
 app = Flask(__name__)
+# --- Enable CORS ---
+# Allows requests from any origin. For production, you might restrict
+# this to your specific chrome extension ID if possible, but '*' is common.
+CORS(app) 
+# Or, for more specific control:
+# cors = CORS(app, resources={r"/chat": {"origins": "*"}}) 
+# --- End CORS Setup ---
 
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({"message": "Flask server is running!"})
+    """Provides a simple endpoint to check if the server is running."""
+    return jsonify({"message": "Flask server for SmartInbox backend is running!"})
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    """Receives message content and returns an AI-generated summary."""
     data = request.json
+    # Check if data is None or not a dictionary
+    if not data:
+        print("Received empty or invalid data")
+        return jsonify({"error": "Invalid JSON data received"}), 400
+        
     user_message = data.get("message", "")
-    print(f"Received message: {user_message}")
-    # Placeholder response (replace with ChatGPT API later)
-    response = main.chatAPICall(user_message); 
-    print(response)
-    
-    return jsonify({"response": response})
+    print(f"Received message length: {len(user_message)}") # Log length instead of full message potentially
+    if not user_message:
+         print("Received empty message content")
+         return jsonify({"error": "Empty message content received"}), 400
+
+    try:
+        # Placeholder response (replace with ChatGPT API later)
+        # Ensure main.chatAPICall exists and handles potential errors
+        response = main.chatAPICall(user_message) 
+        print("Generated response length:", len(response)) # Log length
+        
+        # Ensure the response from chatAPICall is serializable (e.g., a string)
+        return jsonify({"response": response})
+    except Exception as e:
+        print(f"Error during chatAPICall or processing: {e}")
+        # Return a generic error to the client
+        return jsonify({"error": "An internal server error occurred"}), 500
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Runs on all available interfaces (0.0.0.0) on port 5000
+    # debug=True is helpful for development but should be False in production
+    app.run(host="0.0.0.0", port=5000, debug=True) 
+
+# import main
+
+# app = Flask(__name__)
+
+# @app.route("/", methods=["GET"])
+# def home():
+#     return jsonify({"message": "Flask server is running!"})
+
+# @app.route("/chat", methods=["POST"])
+# def chat():
+#     data = request.json
+#     user_message = data.get("message", "")
+#     print(f"Received message: {user_message}")
+#     # Placeholder response (replace with ChatGPT API later)
+#     response = main.chatAPICall(user_message); 
+#     print(response)
+    
+#     return jsonify({"response": response})
+
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=5000, debug=True)
     
 # SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
