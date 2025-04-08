@@ -92,7 +92,7 @@ function getAuthTokenAndFetchEmails() {
                            // decodedBody = decodedBody.replace(/<[^>]*>?/gm, ''); // Very basic stripping
                       } else {
                            console.log(`  - ID: ${messageId}, Found Plain Text body (content length: ${decodedBody.length})`);
-                           console.log(decodedBody); // Log the decoded body for plain text
+                           //console.log(decodedBody); // Log the decoded body for plain text
                       }
           
                        // *** THIS is the full(er) content to send to your backend ***
@@ -102,7 +102,8 @@ function getAuthTokenAndFetchEmails() {
                   } catch (e) {
                        console.error(`  - ID: ${messageId}, Error decoding body: `, e);
                        console.log("    Raw body data that failed:", bodyData.substring(0,100)); // Log raw data on error
-                  }
+                  } 
+                  messagesToSendToAIAPI += decodedBody + "\n\n"; // Append to the string
           
               } else {
                   console.log(`  - ID: ${messageId}, Could not find text/plain or text/html body data.`);
