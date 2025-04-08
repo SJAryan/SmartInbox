@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import json
 
 
 import os.path
@@ -44,7 +45,7 @@ def chat():
     try:
         response = main.chatAPICall(user_message)  
         print(response)
-        
+        response = json.dumps(response)  # Convert to JSON string if needed
         
         return jsonify({"response": response})
     except Exception as e:
