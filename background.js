@@ -137,7 +137,9 @@ function getAuthTokenAndFetchEmails() {
         console.error("Network error fetching Gmail messages:", error);
     }
     console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent 
-    var data  = await sendToAIAPI(messagesToSendToAIAPI); //  Call the function to send messages to AI API
+    var data  = await sendToAIAPI(messagesToSendToAIAPI); //  Call the function to send messages to AI API 
+    console.log("Data received from AI API:", data); // Log the data received from AI API
+    console.log("Data received from AI API:", data.response); // Log the data received from AI API
     if (data && data.response) {
         const summary = data.response; // Access using dot notation
         console.log("Received summary from backend:", summary);
