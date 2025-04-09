@@ -19,7 +19,13 @@
   },
   "action": {
     "default_popup": "index.html" 
-  }
+  }, 
+  "icons": {
+  "16": "image16.png",
+  "48": "icon48.png",
+  "128": "icon128.png"
+}
+
 
   
 
