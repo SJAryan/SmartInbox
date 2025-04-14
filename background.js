@@ -144,10 +144,13 @@ function getAuthTokenAndFetchEmails() {
         const summary = data.response; // Access using dot notation
         console.log("Received summary from backend:", summary);
         // *** Update UI here ***
-        document.getElementById("placeholder").innerHTML = summary; 
+        addParagraphsFromText(summary); // Call the function to add paragraphs from text
+        document.getElementById("placeholder").innerHTML = ""; // Update the placeholder with the summary
+
     } else {
          console.error("Did not receive a valid response structure from backend.");
-         document.getElementById("placeholder").innerHTML = "Error receiving summary.";
+         document.getElementById("placeholder").innerHTML = "Error receiving summary."; 
+
     }
 
     
@@ -204,5 +207,23 @@ function findBodyPart(payload, mimeType) {
     .catch(error => {
         console.error("Error:", error);
         return null; // Return null so you can handle errors gracefully
+    }); 
+
+}
+
+function addParagraphsFromText(text) {
+    const container = document.getElementById("output-container");
+
+    // Clear the container first (optional, if you want to refresh each time)
+    container.innerHTML = "";
+
+    // Split the text on backslashes
+    const parts = text.split("\\");
+
+    // Create a new <p> for each part and append to the container
+    parts.forEach(part => {
+        const p = document.createElement("p");
+        p.textContent = part.trim(); // trim to remove extra whitespace
+        container.appendChild(p);
     });
 }

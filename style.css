@@ -34,9 +34,10 @@ h2 {
     border-bottom: 1px solid #0078d7;
     padding-bottom: 0.5rem;
 }
-#summaries{
+#output-container{
+    width: 100%;
     background-color: #ffffff;
-    /* padding: 1rem; */
+    padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
