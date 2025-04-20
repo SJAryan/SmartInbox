@@ -26,9 +26,8 @@
   "128": "icon128.png"
 },
 "content_security_policy": {
-    "extension_pages": "script-src 'self' https://cdn.tailwindcss.com; object-src 'self';"
-  }
-
+  "extension_pages": "script-src 'self' https://cdn.tailwindcss.com; object-src 'self';"
+}
 
   
 
