@@ -3,21 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartInbox</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SmartInbox Summaries</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Set a fixed width for the popup and prevent resizing */
+        body {
+            width: 400px; /* Adjust width as needed */
+            height: auto; /* Adjust height based on content or set max-height */
+            font-family: 'Inter', sans-serif; /* Tailwind's default font */
+        }
+        /* Custom scrollbar for better aesthetics (Optional) */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
-<body>
-    <script src="background.js" ></script>
-    <header>
-        <h1 id="title">SmartInbox</h1>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-blue-600 text-white p-3 shadow-md">
+        <h1 id="title" class="text-lg font-semibold text-center">SmartInbox Summaries</h1>
     </header>
-    <main>
-        <section id="summary-section">
-            <h2>Summaries</h2>
-            <div id="output-container">
-              
+
+    <main class="p-4">
+        <div id="output-container" class="space-y-3">
+            <div id="placeholder" class="text-center text-gray-500 py-6">
+                Loading summaries...
             </div>
-        </section>
+            </div>
     </main>
+
+    <script src="popup.js"></script> 
 </body>
 </html>
