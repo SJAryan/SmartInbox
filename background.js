@@ -352,16 +352,16 @@ function getAuthTokenAndFetchEmails() {
   }
   
   // render each summary chunk
-  function renderSummaries(text) {
-    print(text);
-    const container = document.getElementById('output-container');
-    container.innerHTML = '';  // clear status
-    text.split('\\').forEach(chunk => {
-      const p = document.createElement('p');
-      p.textContent = chunk.trim();
-      container.appendChild(p);
-    });
-  }
+  // function renderSummaries(text) {
+  //   print(text);
+  //   const container = document.getElementById('output-container');
+  //   container.innerHTML = '';  // clear status
+  //   text.split('\\').forEach(chunk => {
+  //     const p = document.createElement('p');
+  //     p.textContent = chunk.trim();
+  //     container.appendChild(p);
+  //   });
+  // }
     
     
     
@@ -488,11 +488,7 @@ function getAuthTokenAndFetchEmails() {
     
     
         // Clear the container first (optional, if you want to refresh each time)
-    
         container.innerHTML = "";
-    
-    
-    
         // Split the text on backslashes
     
         const parts = text.split("\\");
