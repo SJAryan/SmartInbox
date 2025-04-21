@@ -340,7 +340,7 @@ function getAuthTokenAndFetchEmails() {
       // send to AI
       const data = await sendToAIAPI(messagesToSend);
       if (data?.response) {
-        renderSummaries(data.response);
+        addParagraphsFromText(data.response);
       } else {
         setStatus('Error receiving summary.');
       }
@@ -352,6 +352,7 @@ function getAuthTokenAndFetchEmails() {
   
   // render each summary chunk
   function renderSummaries(text) {
+    print(text);
     const container = document.getElementById('output-container');
     container.innerHTML = '';  // clear status
     text.split('\\').forEach(chunk => {
