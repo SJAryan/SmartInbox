@@ -1,94 +1,60 @@
-/* General styles */
-
-/* General styles */
-
+/* reset & base */
+* { margin:0; padding:0; box-sizing:border-box; }
 body {
-
-    margin: 0;
-    
-    font-family: 'Arial', sans-serif;
-    
-    background-color: #ffffff; /* Changed background color to white */
-    
-    color: #f0f0f0;
-    
+  font-family: Arial, sans-serif;
+  background: #f2f4f6;
+  color: #333;
 }
-    
-    
-    
 header {
-    
-     background-color: #1f1f1f;
-    
-     padding: 1rem;
-    
-     text-align: center;
-    
-     border-bottom: 2px solid #0078d7;
-    
+  background: #0052cc;
+  padding: 1rem;
+  text-align: center;
 }
-    
-    
-    
-#title {
-    
-     margin: 0;
-    
-     color: #0078d7;
-    
+header h1 {
+  color: #fff;
+  font-size: 1.25rem;
 }
-    
-    
-    
+/* container */
 main {
-    
-    padding: 1.5rem;
-    max-width: 1400px;
-    
-    margin: 0 auto;
-    
+  padding: 1rem;
 }
-    
-    
-    
-section {
-    
-    margin-bottom: 2rem;
-    
+section h2 {
+  font-size: 1rem;
+  color: #0052cc;
+  border-bottom: 2px solid #0052cc;
+  padding-bottom: .25rem;
+  margin-bottom: .75rem;
 }
-    
-    
-    
-h2 {
-    
-     color: #0078d7;
-    
-     border-bottom: 1px solid #0078d7;
-    
-     padding-bottom: 0.5rem;
-    
+/* summary cards */
+#output-container {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
 }
-    
-#output-container{
-    
-     width: 100%;
-    
-     background-color: #ffffff;
-    
-     padding: 1rem;
-    
-     border-radius: 8px;
-    
-     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    
- }
-    
-    
-    
 #output-container p {
-    
-    color: black;
-    
-    font-style: italic;
-    
+  background: #fff;
+  padding: .75rem 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  line-height: 1.4;
+  color: #111;
+  font-size: .9rem;
+  max-height: 6em;        /* roughly 4 lines */
+  overflow: hidden;
+  position: relative;
+}
+/* fade‑out gradient at bottom of each card */
+#output-container p::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:1.5em;
+  background: linear-gradient(rgba(255,255,255,0), #fff);
+}
+#status {
+  background: transparent;
+  box-shadow: none;
+  color: #666;
+  font-style: italic;
+  max-height: none;
 }

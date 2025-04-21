@@ -1,3 +1,4 @@
+
 function getAuthTokenAndFetchEmails() {
 
         chrome.identity.getAuthToken({ interactive: true }, function(token) {
@@ -46,267 +47,325 @@ function getAuthTokenAndFetchEmails() {
     
      
     
-      async function fetchGmailMessages(authToken) {
+    //   async function fetchGmailMessages(authToken) {
     
-        const listUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5'; // Get fewer messages initially for testing
+    //     const listUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5'; // Get fewer messages initially for testing
     
     
     
-        try {
+    //     try {
     
-            // --- First API Call: Get Message IDs ---
+    //         // --- First API Call: Get Message IDs ---
     
-            const listResponse = await fetch(listUrl, {
+    //         const listResponse = await fetch(listUrl, {
     
-                headers: { 'Authorization': `Bearer ${authToken}` }
+    //             headers: { 'Authorization': `Bearer ${authToken}` }
     
-            });
+    //         });
     
-            if (!listResponse.ok) {
+    //         if (!listResponse.ok) {
     
-                console.error(`Gmail API List Error: ${listResponse.status}`, await listResponse.json());
+    //             console.error(`Gmail API List Error: ${listResponse.status}`, await listResponse.json());
     
-                return;
+    //             return;
     
-            }
+    //         }
     
-            const listData = await listResponse.json();
+    //         const listData = await listResponse.json();
     
-            const messages = listData.messages || [];
+    //         const messages = listData.messages || [];
     
-            if (messages.length === 0) {
+    //         if (messages.length === 0) {
     
-                console.log("No messages found.");
+    //             console.log("No messages found.");
     
-                return;
+    //             return;
     
-            }
+    //         }
     
     
     
-            // --- Second API Call (Loop): Get Content for Each Message ID ---
+    //         // --- Second API Call (Loop): Get Content for Each Message ID ---
     
-           // console.log("Fetching message content...");
+    //        // console.log("Fetching message content...");
     
-            const detailedMessages = [];
+    //         const detailedMessages = [];
     
-            for (const messageMeta of messages) {
+    //         for (const messageMeta of messages) {
     
-                const messageId = messageMeta.id;
+    //             const messageId = messageMeta.id;
     
-                const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=full`;        
+    //             const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=full`;        
     
-                   const getResponse = await fetch(getUrl, {
+    //                const getResponse = await fetch(getUrl, {
     
-                    headers: { 'Authorization': `Bearer ${authToken}` }
+    //                 headers: { 'Authorization': `Bearer ${authToken}` }
     
-                });
+    //             });
     
     
     
-                if (getResponse.ok) {
+    //             if (getResponse.ok) {
     
-                  const messageDetail = await getResponse.json();
+    //               const messageDetail = await getResponse.json();
     
     
     
-                  let bodyData = null;
+    //               let bodyData = null;
     
-                  let mimeType = '';
+    //               let mimeType = '';
     
-             
+    //          
     
-                  // 1. Try to find 'text/plain' part first
+    //               // 1. Try to find 'text/plain' part first
     
-                  if (messageDetail.payload) {
+    //               if (messageDetail.payload) {
     
-                     mimeType = 'text/plain';
+    //                  mimeType = 'text/plain';
     
-                     bodyData = findBodyPart(messageDetail.payload, mimeType);
+    //                  bodyData = findBodyPart(messageDetail.payload, mimeType);
     
-                  }
+    //               }
     
-             
+    //          
     
-                  // 2. If no 'text/plain', try to fin d 'text/html'
+    //               // 2. If no 'text/plain', try to fin d 'text/html'
     
-                  if (!bodyData && messageDetail.payload) {
+    //               if (!bodyData && messageDetail.payload) {
     
-                     mimeType = 'text/html';
+    //                  mimeType = 'text/html';
     
-                     bodyData = findBodyPart(messageDetail.payload, mimeType);
+    //                  bodyData = findBodyPart(messageDetail.payload, mimeType);
     
-                  }
+    //               }
     
-             
+    //          
     
-                  // 3. Fallback for very simple messages (less common)
+    //               // 3. Fallback for very simple messages (less common)
     
-                   if (!bodyData && messageDetail.payload && messageDetail.payload.body && messageDetail.payload.body.data) {
+    //                if (!bodyData && messageDetail.payload && messageDetail.payload.body && messageDetail.payload.body.data) {
     
-                      bodyData = messageDetail.payload.body.data;
+    //                   bodyData = messageDetail.payload.body.data;
     
-                      mimeType = messageDetail.payload.mimeType;
+    //                   mimeType = messageDetail.payload.mimeType;
     
-                   }
+    //                }
     
-             
+    //          
     
-             
+    //          
     
-                  let decodedBody = '';
+    //               let decodedBody = '';
     
-                  if (bodyData) {
+    //               if (bodyData) {
     
-                      try {
+    //                   try {
     
-                          decodedBody = base64UrlDecode(bodyData);
+    //                       decodedBody = base64UrlDecode(bodyData);
     
-             
+    //          
     
-                          // If it was HTML, you might want to strip tags here or send HTML to backend
+    //                       // If it was HTML, you might want to strip tags here or send HTML to backend
     
-                          if (mimeType === 'text/html') {
+    //                       if (mimeType === 'text/html') {
     
-                               console.log(`  - ID: ${messageId}, Found HTML body (content length: ${decodedBody.length}). Needs stripping for pure text summary.`);
+    //                            console.log(`  - ID: ${messageId}, Found HTML body (content length: ${decodedBody.length}). Needs stripping for pure text summary.`);
     
-                               // You could implement basic tag stripping here if needed immediately
+    //                            // You could implement basic tag stripping here if needed immediately
     
-                               // decodedBody = decodedBody.replace(/<[^>]*>?/gm, ''); // Very basic stripping
+    //                            // decodedBody = decodedBody.replace(/<[^>]*>?/gm, ''); // Very basic stripping
     
-                          } else {
+    //                       } else {
     
-                               console.log(`  - ID: ${messageId}, Found Plain Text body (content length: ${decodedBody.length})`);
+    //                            console.log(`  - ID: ${messageId}, Found Plain Text body (content length: ${decodedBody.length})`);
     
-                               //console.log(decodedBody); // Log the decoded body for plain text
+    //                            //console.log(decodedBody); // Log the decoded body for plain text
     
-                          }
+    //                       }
     
-             
+    //          
     
-                           // *** THIS is the full(er) content to send to your backend ***
+    //                        // *** THIS is the full(er) content to send to your backend ***
     
-                           console.log("    Decoded Body Snippet:", decodedBody.substring(0, 200)); // Log first 200 chars
+    //                        console.log("    Decoded Body Snippet:", decodedBody.substring(0, 200)); // Log first 200 chars
     
-                           // TODO: Send decodedBody to your Python backend for summarization
+    //                        // TODO: Send decodedBody to your Python backend for summarization
     
-             
+    //          
     
-                      } catch (e) {
+    //                   } catch (e) {
     
-                           console.error(`  - ID: ${messageId}, Error decoding body: `, e);
+    //                        console.error(`  - ID: ${messageId}, Error decoding body: `, e);
     
-                           console.log("    Raw body data that failed:", bodyData.substring(0,100)); // Log raw data on error
+    //                        console.log("    Raw body data that failed:", bodyData.substring(0,100)); // Log raw data on error
     
-                      }
+    //                   }
     
-                       // --- Find the Subject ---
+    //                    // --- Find the Subject ---
     
-        let subject = 'No Subject'; // Default if not found
+    //     let subject = 'No Subject'; // Default if not found
     
-        if (messageDetail.payload && messageDetail.payload.headers) {
+    //     if (messageDetail.payload && messageDetail.payload.headers) {
     
-            // Use .find() to search the headers array
+    //         // Use .find() to search the headers array
     
-            const subjectHeader = messageDetail.payload.headers.find(
+    //         const subjectHeader = messageDetail.payload.headers.find(
     
-                header => header.name.toLowerCase() === 'subject'
+    //             header => header.name.toLowerCase() === 'subject'
     
-            );
+    //         );
     
-            if (subjectHeader) {
+    //         if (subjectHeader) {
     
-                subject = subjectHeader.value; // Get the value if found
+    //             subject = subjectHeader.value; // Get the value if found
     
-            }
+    //         }
     
-        }
+    //     }
     
-                     
+    //                  
     
-                      messagesToSendToAIAPI += "Subject:  " + "\n\n" + subject + "Body of message:  " + "\n\n" + decodedBody + "\n\n" + "Next Message:" + "\n\n"; // Append to the string
+    //                   messagesToSendToAIAPI += "Subject:  " + "\n\n" + subject + "Body of message:  " + "\n\n" + decodedBody + "\n\n" + "Next Message:" + "\n\n"; // Append to the string
     
-             
+    //          
     
-                  } else {
+    //               } else {
     
-                      console.log(`  - ID: ${messageId}, Could not find text/plain or text/html body data.`);
+    //                   console.log(`  - ID: ${messageId}, Could not find text/plain or text/html body data.`);
     
-                      // Sometimes the main content might be in an attachment or structured differently
+    //                   // Sometimes the main content might be in an attachment or structured differently
     
-                  }
+    //               }
     
-             
+    //          
     
-                  // Store or process the detailed message / decoded body as needed
+    //               // Store or process the detailed message / decoded body as needed
     
-                  // detailedMessages.push({ id: messageId, snippet: messageDetail.snippet, body: decodedBody });
+    //               // detailedMessages.push({ id: messageId, snippet: messageDetail.snippet, body: decodedBody });
     
-             
+    //          
     
-              } else {
+    //           } else {
     
-                  console.error(`Gmail API Get Error for ID ${messageId}: ${getResponse.status}`, await getResponse.json());
+    //               console.error(`Gmail API Get Error for ID ${messageId}: ${getResponse.status}`, await getResponse.json());
     
-              }
+    //           }
     
-                // Add a small delay if needed to avoid hitting rate limits too quickly
+    //             // Add a small delay if needed to avoid hitting rate limits too quickly
     
-                // await new Promise(resolve => setTimeout(resolve, 100));
+    //             // await new Promise(resolve => setTimeout(resolve, 100));
     
-            }
+    //         }
     
-            console.log("Finished fetching detailed messages:", detailedMessages);
+    //         console.log("Finished fetching detailed messages:", detailedMessages);
     
-            // Now you have detailedMessages array containing actual content to process/summarize
+    //         // Now you have detailedMessages array containing actual content to process/summarize
     
     
     
     
     
-        } catch (error) {
+    //     } catch (error) {
     
-            console.error("Network error fetching Gmail messages:", error);
+    //         console.error("Network error fetching Gmail messages:", error);
     
-        }
+    //     }
     
-        console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent
+    //     console.log("Messages to send to AI API:", messagesToSendToAIAPI); // Log the messages to be sent
     
-        var data  = await sendToAIAPI(messagesToSendToAIAPI); //  Call the function to send messages to AI API
+    //     var data  = await sendToAIAPI(messagesToSendToAIAPI); //  Call the function to send messages to AI API
     
-        console.log("Data received from AI API:", data); // Log the data received from AI API
+    //     console.log("Data received from AI API:", data); // Log the data received from AI API
     
-        console.log("Data received from AI API:", data.response); // Log the data received from AI API
+    //     console.log("Data received from AI API:", data.response); // Log the data received from AI API
     
-        if (data && data.response) {
+    //     if (data && data.response) {
     
-            const summary = data.response; // Access using dot notation
+    //         const summary = data.response; // Access using dot notation
     
-            console.log("Received summary from backend:", summary);
+    //         console.log("Received summary from backend:", summary);
     
-            // *** Update UI here ***
+    //         // *** Update UI here ***
     
-            addParagraphsFromText(summary); // Call the function to add paragraphs from text
+    //         addParagraphsFromText(summary); // Call the function to add paragraphs from text
     
-            document.getElementById("placeholder").innerHTML = ""; // Update the placeholder with the summary
+    //         document.getElementById("placeholder").innerHTML = ""; // Update the placeholder with the summary
     
     
     
-        } else {
+    //     } else {
     
-             console.error("Did not receive a valid response structure from backend.");
+    //          console.error("Did not receive a valid response structure from backend.");
     
-             document.getElementById("placeholder").innerHTML = "Error receiving summary.";
+    //          document.getElementById("placeholder").innerHTML = "Error receiving summary.";
     
     
     
-        }
+   //     }
+   function setStatus(text) {
+    const statusEl = document.getElementById('status');
+    statusEl.textContent = text;
+  }
+  async function fetchGmailMessages(authToken) {
+    setStatus('Fetching messages...');
+    // get IDs…
+    const listUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5';
+    let messagesToSend = 'First Message:\n\n';
+    try {
+      const listResp = await fetch(listUrl, {
+        headers:{ 'Authorization': `Bearer ${authToken}` }
+      });
+      if (!listResp.ok) throw new Error('List ' + listResp.status);
+      const { messages=[] } = await listResp.json();
+      if (!messages.length) {
+        setStatus('No messages found.');
+        return;
+      }
+      setStatus('Summarizing…');
+      // gather bodies…
+      for (let {id} of messages) {
+        const msg = await fetch(
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=full`,
+          { headers:{ 'Authorization': `Bearer ${authToken}` } }
+        ).then(r => r.json());
+        // decode & subject logic…
+        const subjectHeader = msg.payload.headers.find(h=>h.name.toLowerCase()==='subject');
+        const subject = subjectHeader?.value||'No Subject';
+        const raw = findBodyPart(msg.payload,'text/plain')
+                  || findBodyPart(msg.payload,'text/html')
+                  || msg.payload.body?.data || '';
+        const body = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+        messagesToSend += `Subject: ${subject}\n\n${body}\n\nNext Message:\n\n`;
+      }
+      // send to AI
+      const data = await sendToAIAPI(messagesToSend);
+      if (data?.response) {
+        renderSummaries(data.response);
+      } else {
+        setStatus('Error receiving summary.');
+      }
+    } catch (e) {
+      console.error(e);
+      setStatus('Error fetching messages.');
+    }
+  }
+  
+  // render each summary chunk
+  function renderSummaries(text) {
+    const container = document.getElementById('output-container');
+    container.innerHTML = '';  // clear status
+    text.split('\\').forEach(chunk => {
+      const p = document.createElement('p');
+      p.textContent = chunk.trim();
+      container.appendChild(p);
+    });
+  }
     
     
     
        
     
-    }
+    
     
     
     
