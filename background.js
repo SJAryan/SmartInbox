@@ -341,6 +341,7 @@ function getAuthTokenAndFetchEmails() {
       const data = await sendToAIAPI(messagesToSend);
       if (data?.response) {
         addParagraphsFromText(data.response);
+        console.log('Received summary from backend:', data.response);   
       } else {
         setStatus('Error receiving summary.');
       }
