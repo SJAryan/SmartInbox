@@ -19,6 +19,7 @@ prompt = "Act as an assistant who helps individuals by providing them with conci
 def chatAPICall(user_message): 
     user_message = prompt + user_message
     print(user_message)
+    print(client.api_key)
     # Call the OpenAI API to get a chat completion
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
